@@ -181,13 +181,19 @@ namespace VF.Inspector {
                 })
             ));
 
-            var haptics = GetHapticsSection();
-            container.Add(haptics);
-            haptics.Add(VRCFuryEditorUtils.BetterProp(
-                        serializedObject.FindProperty("spsHaptic"),
-                        "Haptics",
-                        tooltip: "This is a hack."
-                    ));
+            var enableHaptics = serializedObject.FindProperty("enableHaptics");
+            container.Add(VRCFuryEditorUtils.BetterProp(enableHaptics, "Enable OGB haptic support for this plug?"));
+            container.Add(VRCFuryEditorUtils.RefreshOnChange(() => {
+                var haptics = VRCFuryEditorUtils.Section("Haptics");
+                if (!HapticsToggleMenuItem.Get()) {
+                    haptics.Add(VRCFuryEditorUtils.Error("Haptics have been disabled in the VRCFury unity settings"));
+                } else if (!enableHaptics.boolValue) {
+                    haptics.Add(VRCFuryEditorUtils.Info("OGB haptic support is disabled for this plug"));
+                } else {
+                    haptics.Add(VRCFuryEditorUtils.Info("OGB haptic support is enabled for this plug"));
+                }
+                return haptics;
+            }, enableHaptics));
 
             var adv = new Foldout {
                 text = "Advanced Plug Options",
@@ -203,15 +209,6 @@ namespace VF.Inspector {
             adv.Add(VRCFuryEditorUtils.BetterProp(serializedObject.FindProperty("spsKeepImports"), "(Developer) Do not flatten SPS imports"));
 
             return container;
-        }
-
-        public static VisualElement GetHapticsSection() {
-            if (HapticsToggleMenuItem.Get()) {
-                return VRCFuryEditorUtils.Section("Haptics", "OGB haptic support is enabled on this plug by default");
-            }
-            var el = VRCFuryEditorUtils.Section("Haptics");
-            el.Add(VRCFuryEditorUtils.Error("Haptics have been disabled in the VRCFury unity settings"));
-            return el;
         }
 
         public static VisualElement ConstraintWarning(UnityEngine.Component c, bool isSocket = false) {
