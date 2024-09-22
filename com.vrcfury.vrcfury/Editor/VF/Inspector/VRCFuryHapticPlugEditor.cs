@@ -184,15 +184,17 @@ namespace VF.Inspector {
             var enableHaptics = serializedObject.FindProperty("enableHaptics");
             container.Add(VRCFuryEditorUtils.BetterProp(enableHaptics, "Enable OGB haptic support for this plug?"));
             container.Add(VRCFuryEditorUtils.RefreshOnChange(() => {
-                var haptics = VRCFuryEditorUtils.Section("Haptics");
-                if (!HapticsToggleMenuItem.Get()) {
-                    haptics.Add(VRCFuryEditorUtils.Error("Haptics have been disabled in the VRCFury unity settings"));
-                } else if (!enableHaptics.boolValue) {
-                    haptics.Add(VRCFuryEditorUtils.Info("OGB haptic support is disabled for this plug"));
-                } else {
-                    haptics.Add(VRCFuryEditorUtils.Info("OGB haptic support is enabled for this plug"));
+                var c = new VisualElement();
+                if (enableHaptics.boolValue) {
+                    var hapticsBox = VRCFuryEditorUtils.Section("Haptics");
+                    c.Add(hapticsBox);
+                    if (!HapticsToggleMenuItem.Get()) {
+                        hapticsBox.Add(VRCFuryEditorUtils.Error("Haptics have been disabled in the VRCFury unity settings"));
+                    } else {
+                        hapticsBox.Add(VRCFuryEditorUtils.Info("OGB haptic enabled sockets will respond to this plug"));
+                    }
                 }
-                return haptics;
+                return c;
             }, enableHaptics));
 
             var adv = new Foldout {
