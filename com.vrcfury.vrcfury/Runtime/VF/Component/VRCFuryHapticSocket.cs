@@ -28,9 +28,9 @@ namespace VF.Component {
         public bool addMenuItem = true;
         public GuidTexture2d menuIcon;
         public bool enableAuto = true;
-        public bool spsHaptic = true;
         public Vector3 position;
         public Vector3 rotation;
+        public bool enableHaptics = true;
         [NonSerialized] public bool sendersOnly = false;
         
         public List<DepthActionNew> depthActions2 = new List<DepthActionNew>();

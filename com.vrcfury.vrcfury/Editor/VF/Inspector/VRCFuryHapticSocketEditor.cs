@@ -80,23 +80,30 @@ namespace VF.Inspector {
                 VRCFuryEditorUtils.BetterProp(serializedObject.FindProperty("activeActions"))
             ));
 
-            var haptics = VRCFuryHapticPlugEditor.GetHapticsSection();
-            container.Add(haptics);
+            var enableHaptics = serializedObject.FindProperty("enableHaptics");
+            container.Add(VRCFuryEditorUtils.BetterProp(enableHaptics, "Enable OGB haptic support for this socket?"));
+            container.Add(VRCFuryEditorUtils.RefreshOnChange(() => {
+                var c = new VisualElement();
+                if (enableHaptics.boolValue) {
+                    var hapticsBox = VRCFuryEditorUtils.Section("Haptics");
+                    c.Add(hapticsBox);
+                    if (!HapticsToggleMenuItem.Get()) {
+                        hapticsBox.Add(VRCFuryEditorUtils.Error("Haptics have been disabled in the VRCFury unity settings"));
+                    } else {
+                        hapticsBox.Add(VRCFuryEditorUtils.Info("OGB haptic enabled plugs, and hands when enabled below, will influence this socket"));
+                        hapticsBox.Add(VRCFuryEditorUtils.BetterProp(
+                            serializedObject.FindProperty("enableHandTouchZone2"),
+                            "Enable hand touch zone? (Auto will add only if child of Hips)"
+                        ));
+                        hapticsBox.Add(VRCFuryEditorUtils.BetterProp(
+                            serializedObject.FindProperty("length"),
+                            "Hand touch zone depth override in meters:\nNote, this zone is only used for hand touches, not plug interaction."
+                        ));
+                    }
+                }
+                return c;
+            }, enableHaptics));
 
-            haptics.Add(VRCFuryEditorUtils.BetterProp(
-                serializedObject.FindProperty("enableHandTouchZone2"),
-                "Enable hand touch zone? (Auto will add only if child of Hips)"
-            ));
-            haptics.Add(VRCFuryEditorUtils.BetterProp(
-                serializedObject.FindProperty("length"),
-                "Hand touch zone depth override in meters:\nNote, this zone is only used for hand touches, not plug interaction."
-            ));
-            haptics.Add(VRCFuryEditorUtils.BetterProp(
-                serializedObject.FindProperty("spsHaptic"),
-                "Haptics",
-                tooltip: "This is a hack."
-            ));
-            
             var adv = new Foldout {
                 text = "Advanced",
                 value = false,
